@@ -28,21 +28,23 @@ module.exports = function(app) {
   app.post("/api/new", function(req, res) {
     console.log("Argument received:", req.body.responses[0]);
     var responses = req.body.responses;
-    var q1 = responses[2];
-    var q2 = responses[3];
-    var q3 = responses[4];
-    var q4 = responses[5];
-    var q5 = responses[6];
-    var q6 = responses[7];
-    var q7 = responses[8];
-    var q8 = responses[9];
-    var q9 = responses[10];
-    var q10 = responses[11];
+    var name = responses[0];
+    var picture = responses[1];
+    var q1 = parseInt(responses[2]);
+    var q2 = parseInt(responses[3]);
+    var q3 = parseInt(responses[4]);
+    var q4 = parseInt(responses[5]);
+    var q5 = parseInt(responses[6]);
+    var q6 = parseInt(responses[7]);
+    var q7 = parseInt(responses[8]);
+    var q8 = parseInt(responses[9]);
+    var q9 = parseInt(responses[10]);
+    var q10 = parseInt(responses[11]);
 
     connection.query("select * from friends", function(err, response) {
       if (err) throw err;
       console.log(response);
-      var lowestDiff = [50, -1];
+      var lowestDiff = [50, 0];
       response.forEach(friend => {
         var localDifference = 0;
         localDifference += Math.abs(parseInt(friend.q1) - parseInt(q1));
@@ -59,31 +61,14 @@ module.exports = function(app) {
           lowestDiff = [localDifference, friend];
         }
       });
+      connection.query(
+        "insert into friends (name, picture, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10) values(?,?,?,?,?,?,?,?,?,?,?,?)",
+        [name, picture, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10],
+        function(err, response) {
+          if (err) throw err;
+        }
+      );
       res.json(lowestDiff[1]);
     });
   });
 };
-//   app.get("/api/friend", function(req, res) {
-//     // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-//     // It will do this by sending out the value "true" have a table
-//     // req.body is available since we're using the body parsing middleware
-//     if (tableData.length < 5) {
-//       tableData.push(req.body);
-//       res.json(true);
-//     } else {
-//       waitListData.push(req.body);
-//       res.json(false);
-//     }
-//   });
-
-//   // ---------------------------------------------------------------------------
-//   // I added this below code so you could clear out the table while working with the functionality.
-//   // Don"t worry about it!
-
-// //   app.post("/api/clear", function(req, res) {
-// //     // Empty out the arrays of data
-// //     tableData.length = 0;
-// //     waitListData.length = 0;
-
-// //     res.json({ ok: true });
-// //   });
